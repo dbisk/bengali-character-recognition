@@ -41,7 +41,7 @@ class BengaliDataset(Dataset):
 
         a = self.data.iloc[idx,1:]
         x =a.to_numpy()
-        x = x.astype('float').reshape(-1,137,236)
+        x = x.astype('float').reshape(-1,1,137,236)
         y = self.labels.iloc[idx,1:4]
         y = y.to_numpy()
         y = y.reshape(-1,3)

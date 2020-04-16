@@ -18,7 +18,7 @@ d = BengaliDataset('train.csv', './dataset/')
 print(d.data.shape)
 print(d[[0,1]]['data'].shape)
 print(d[[0,1]]['labels'])
-sample = d[5]['data'][0]
+sample = d[5]['data'][0][0]
 plt.figure()
 plt.imshow(sample.astype(int), cmap='gray', vmin=0, vmax=255)
 plt.show()
