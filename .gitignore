@@ -6,3 +6,5 @@ lib64/
 lib64/*
 pyvenv.cfg
 dataset/
+__pycache__/
+__pycache__/*
