@@ -1,6 +1,5 @@
 import torch
 from  torch.utils.data import Dataset
-import numpy as np
 
 class BengaliDataset(Dataset):
 
@@ -18,12 +17,11 @@ class BengaliDataset(Dataset):
 
         a = self.data.iloc[idx,4:]
         x = a.to_numpy()
-        x = x.astype('float').reshape(-1,1,137,236)
+        x = x.astype('float').reshape(1,137,236)
         y = self.labels.iloc[idx]
         y = y.to_numpy()
         y = y.reshape(-1,3)
-        identifier = np.array([self.data.iloc[idx,3]])
+        sample = {'data':x, 'labels':y}
         if(self.transform):
-            x = self.transform(x)
-        return {'data':x, 'labels':y, 'identifier':identifier}
-
+            sample['data'] = self.transform(sample['data'])
+        return sample

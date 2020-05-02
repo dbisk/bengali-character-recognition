@@ -1,9 +1,10 @@
 import pyarrow.parquet as pq
 import pandas as pd
 from BengaliDataset import BengaliDataset as bd
+from tqdm import tqdm
 
 
-def getData(root_dir, csvfile, write = False):
+def getData(root_dir, csvfile, train_transform=None, test_transform=None):
 
     base_str = 'train_image_data_'
     filetype = '.parquet'
@@ -24,8 +25,19 @@ def getData(root_dir, csvfile, write = False):
 
     del(labels)
     del(data1, data2, data3, data4)
-    train = bd(data.iloc[:160672])
-    test = bd(data.iloc[160672:])
-    if(write):
-        data.to_csv('allPics.csv')
+    train = bd(data.iloc[:160672], transform=train_transform)
+    test = bd(data.iloc[160672:], transform=test_transform)
     return train, test
+
+
+def trainModel(net, train_dataloader, test_dataloader):
+
+    for i, batch in tqdm(enumerate(train_dataloader)):
+        if(i == 0):
+            print(batch['labels'])
+        #forward
+
+        #backward
+
+        #validation
+    pass
