@@ -23,9 +23,8 @@ def testTrainingLoop():
 
     main_transform = transforms.Compose([transforms.ToTensor()])
     trainset, testset = getData('./dataset/', 'train.csv', train_transform = main_transform, test_transform = main_transform)
-    print(trainset[0])
-    train_dataloader = DataLoader(trainset, batch_size = 16, shuffle = True, num_workers = 8)
-    test_dataloader = DataLoader(testset, batch_size = 16, shuffle = True, num_workers = 8)
+    train_dataloader = DataLoader(trainset, batch_size = 64, shuffle = True, num_workers = 8)
+    test_dataloader = DataLoader(testset, batch_size = 64, shuffle = True, num_workers = 8)
     trainModel(None, train_dataloader, test_dataloader)
 
 

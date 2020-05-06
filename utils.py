@@ -1,7 +1,8 @@
 import pyarrow.parquet as pq
 import pandas as pd
 from BengaliDataset import BengaliDataset as bd
-from tqdm import tqdm
+import train
+import numpy as np
 
 
 def getData(root_dir, csvfile, train_transform=None, test_transform=None):
@@ -25,6 +26,7 @@ def getData(root_dir, csvfile, train_transform=None, test_transform=None):
 
     del(labels)
     del(data1, data2, data3, data4)
+    data.astype(np.int8, errors='ignore', copy=False)
     train = bd(data.iloc[:160672], transform=train_transform)
     test = bd(data.iloc[160672:], transform=test_transform)
     return train, test
@@ -32,9 +34,7 @@ def getData(root_dir, csvfile, train_transform=None, test_transform=None):
 
 def trainModel(net, train_dataloader, test_dataloader):
 
-    for i, batch in tqdm(enumerate(train_dataloader)):
-        if(i == 0):
-            print(batch['labels'])
+    train.train(net, train_dataloader, test_dataloader)
         #forward
 
         #backward
