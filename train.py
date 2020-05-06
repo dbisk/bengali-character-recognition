@@ -17,6 +17,8 @@ def train(model, train_dataloader, test_dataloader):
     for epoch in range(epochs):
         totalLoss = 0
         cnt = 0
+        correct = 0
+        total = 0
         print('Epoch:', epoch)
         for i, batch in enumerate(tqdm(train_dataloader)):
             cnt += 1
@@ -27,12 +29,19 @@ def train(model, train_dataloader, test_dataloader):
             imgs = imgs.to(device)
             labels = labels.to(device)
             outs = model(imgs)
+
+            #from pytorch tutorials:
+            _,preds = torch.max(outs,1)
+            correct += (preds == labels).sum().item()
+            total += labels.size(0)
+
             optimizer.zero_grad()
             l = loss(outs, labels)
             totalLoss += l.item()
             l.backward()
             optimizer.step()
         print('Loss:', totalLoss/cnt)
+        print('Accuracy:', correct / total)
 
     return
 
