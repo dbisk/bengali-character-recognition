@@ -80,6 +80,25 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
             inputs = batch['data']
             inputs = makeSquareBatch(inputs, 236).to(device)
             labels = batch['labels'].to(device)
+            #########################
+            # FROM SUHAAS SECTION ###
+            #########################
+            # cnt += 1
+            # imgs = batch['data']
+            # labels = batch['labels']
+            # imgs = imgs.float()
+            # labels = labels.squeeze(1)
+            # imgs = imgs.to(device)
+            # labels = labels.to(device)
+            # outs = model(imgs)
+
+            # #from pytorch tutorials:
+            # _,preds = torch.max(outs,1)
+            # correct += (preds == labels).all(1).sum().item()
+            # total += labels.size(0)
+            ##########################
+            ##### END SECTION ########
+            ##########################
 
             # zero the parameter gradients
             optimizer.zero_grad()
