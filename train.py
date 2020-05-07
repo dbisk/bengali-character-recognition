@@ -8,7 +8,7 @@ def train(model, train_dataloader, test_dataloader):
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print('Using:', device)
-    lr = .005
+    lr = .1
     model = custom.CustomNet()
     model = model.to(device)
     loss = nn.CrossEntropyLoss()
@@ -32,7 +32,7 @@ def train(model, train_dataloader, test_dataloader):
 
             #from pytorch tutorials:
             _,preds = torch.max(outs,1)
-            correct += (preds == labels).sum().item()
+            correct += (preds == labels).all(1).sum().item()
             total += labels.size(0)
 
             optimizer.zero_grad()
