@@ -21,7 +21,7 @@ class BengaliDataset(Dataset):
         if (torch.is_tensor(idx)):
             idx = idx.tolist()
         
-        img = self.data.iloc[idx,:].to_numpy().reshape((-1, self.HEIGHT, self.WIDTH))
+        img = self.data.iloc[idx,:].to_numpy().reshape((self.HEIGHT, self.WIDTH))
         lbl = self.labels.iloc[idx,:].to_numpy()
 
         if (self.transform):
