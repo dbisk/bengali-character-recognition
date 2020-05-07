@@ -38,13 +38,14 @@ def main():
     testloader = DataLoader(testset, batch_size=64, shuffle=True, drop_last=True)
     
     # create the model
-    model = prnet.PretrainedResnet(TOTAL_ROOTS, TOTAL_VOWELS, TOTAL_CONS)
+    # model = prnet.PretrainedResnet(TOTAL_ROOTS, TOTAL_VOWELS, TOTAL_CONS)
+    model = torch.load('./saved_model.pth')
 
     # train the model
-    model = train.train(model, trainloader, testloader, epochs=20)
+    model = train.train(model, trainloader, testloader, epochs=20, lr=0.003)
 
     # save the model
-    torch.save(model, './saved_model.pth')
+    torch.save(model, './saved_model2.pth')
 
     return
 

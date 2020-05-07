@@ -47,10 +47,10 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
             preds_root = torch.max(out_root, 1)[1]
             preds_vowe = torch.max(out_vowe, 1)[1]
             preds_cons = torch.max(out_cons, 1)[1]
-            correct += (preds_root == labels[:,0]).sum().item()
-            correct += (preds_vowe == labels[:,1]).sum().item()
-            correct += (preds_cons == labels[:,2]).sum().item()
-            total += 3 * labels.size(0)
+            correct += torch.stack(((preds_root == labels[:,0]), (preds_vowe == labels[:,1]), (preds_cons == labels[:,2])), dim=1).all(1).sum().item()
+            # correct += (preds_vowe == labels[:,1]).sum().item()
+            # correct += (preds_cons == labels[:,2]).sum().item()
+            total += labels.size(0)
 
             # statistics
             running_loss += loss.item()
@@ -72,10 +72,11 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
                     preds_root = torch.max(out_root, 1)[1]
                     preds_vowe = torch.max(out_vowe, 1)[1]
                     preds_cons = torch.max(out_cons, 1)[1]
-                    correct += (preds_root == labels[:,0]).sum().item()
-                    correct += (preds_vowe == labels[:,1]).sum().item()
-                    correct += (preds_cons == labels[:,2]).sum().item()
-                    total += 3 * labels.size(0)
+                    correct += torch.stack(((preds_root == labels[:,0]), (preds_vowe == labels[:,1]), (preds_cons == labels[:,2])), dim=1).all(1).sum().item()
+                    # correct += (preds_root == labels[:,0]).sum().item()
+                    # correct += (preds_vowe == labels[:,1]).sum().item()
+                    # correct += (preds_cons == labels[:,2]).sum().item()
+                    total += labels.size(0)
             print("[%d] VAL acc %.3f" % (epoch + 1, 100 * correct / total))
     
     # complete, return the model
