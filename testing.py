@@ -35,5 +35,5 @@ def testTrainingLoop(need_pickle=False):
 
 if __name__ == '__main__':
     # set this to true if you don't already have a pickle file
-    testDataset(need_pickle=False)
-    # testTrainingLoop(need_pickle=False)
+    #testDataset(need_pickle=False)
+     testTrainingLoop(need_pickle=False)

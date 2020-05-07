@@ -13,8 +13,12 @@ def train(model, train_dataloader, test_dataloader):
     model = model.to(device)
     loss = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr = lr)
-    epochs = 10
+    epochs = 51
+    currBestAcc = 0
+    bestEpoch = 0
     for epoch in range(epochs):
+
+        model.train()
         totalLoss = 0
         cnt = 0
         correct = 0
@@ -42,6 +46,31 @@ def train(model, train_dataloader, test_dataloader):
             optimizer.step()
         print('Loss:', totalLoss/cnt)
         print('Accuracy:', correct / total)
+        if(epoch % 10 == 0):
+            model.eval()
+            print('Testing on Validation')
+            correct = 0
+            total = 0
+            for i, batch in enumerate(tqdm(test_dataloader)):
+                imgs = batch['data']
+                labels = batch['labels']
+                imgs = imgs.float()
+                labels = labels.squeeze(1)
+                imgs = imgs.to(device)
+                labels = labels.to(device)
+                outs = model(imgs)
+                _,preds = torch.max(outs,1)
+                correct += (preds == labels).all(1).sum().item()
+                total += labels.size(0)
+            print('Testing accuracy:', correct/total)
+            if(correct/total > currBestAcc):
+                currBestAcc = correct/total
+                torch.save(model.state_dict(), './models/trainedModels/currBest.model')
+                bestEpoch = epoch
+
+
+
+    print('Epoch', bestEpoch, 'gave the best validation accuracy of', currBestAcc)
 
     return
 
