@@ -20,15 +20,20 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad], lr=lr)
 
+    # save the best model
+    best_acc = 0.0
     # begin training loop
     for epoch in range(epochs):
         model.train() # set model to training mode
+        # decrease lr after a while
+        if (epoch > 1 and epoch % 15 == 0 and epoch < 31):
+            lr = lr / 10
         running_loss = 0.0
         correct = 0
         total = 0
         for i, batch in enumerate(tqdm(train_dataloader)):
             inputs = batch['data']
-            inputs = makeSquareBatch(inputs, 236).repeat(1, 3, 1, 1).to(device)
+            inputs = makeSquareBatch(inputs, 236).to(device)
             labels = batch['labels'].to(device)
 
             # zero the parameter gradients
@@ -57,16 +62,21 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
         
         # normalize by number of batches
         running_loss /= len(train_dataloader)
-        print("[%d] loss %.3f, acc %.3f" % (epoch + 1, running_loss, 100 * correct / total))
+        acc = 100 * correct / total
+        print("[%d] loss %.3f, acc %.3f" % (epoch + 1, running_loss, acc))
+        if (acc > best_acc):
+            torch.save(model, './best_model.pth')
+            best_acc = acc
 
         # every few epochs, check validation set
         if (epoch % 5 == 0 or epoch + 1 == epochs ):
+            model.eval() # set model to eval mode
             correct = 0
             total = 0
             with torch.no_grad():
                 for batch in tqdm(test_dataloader):
                     inputs = batch['data']
-                    inputs = makeSquareBatch(inputs, 236).repeat(1, 3, 1, 1).to(device)
+                    inputs = makeSquareBatch(inputs, 236).to(device)
                     labels = batch['labels'].to(device)
                     out_root, out_vowe, out_cons = model(inputs)
                     preds_root = torch.max(out_root, 1)[1]

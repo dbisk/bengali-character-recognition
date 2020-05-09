@@ -19,14 +19,15 @@ class PretrainedResnet(nn.Module):
         self.resnet = torchvision.models.resnet18(pretrained=True)
         res_features = self.resnet.fc.in_features
         self.resnet.fc = Identity()
-        for param in self.resnet.parameters():
-            param.requires_grad = False
+        self.resnet.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+        # for param in self.resnet.parameters():
+        #     param.requires_grad = False
         self.fc_root = nn.Linear(res_features, total_roots)
         self.fc_vowel = nn.Linear(res_features, total_vowels)
         self.fc_cons = nn.Linear(res_features, total_cons)
 
     def forward(self, x):
-        # x is expected to be 3x224x224 in original resnet18
+        # x is expected to be 1x224x224
         x = self.resnet(x)
         root = self.fc_root(x)
         vowel = self.fc_vowel(x)

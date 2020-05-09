@@ -33,19 +33,19 @@ def main():
     ])
 
     # set up the datasets/loaders
-    trainset, testset = utils.getData(pkl_path, train_transform=train_transform, test_transform=test_transform)
+    trainset, testset = utils.getData(pkl_path, split=0.5, drop=0.3, train_transform=train_transform, test_transform=test_transform)
     trainloader = DataLoader(trainset, batch_size=64, shuffle=True, drop_last=True)
     testloader = DataLoader(testset, batch_size=64, shuffle=True, drop_last=True)
     
     # create the model
-    # model = prnet.PretrainedResnet(TOTAL_ROOTS, TOTAL_VOWELS, TOTAL_CONS)
-    model = torch.load('./saved_model.pth')
+    model = prnet.PretrainedResnet(TOTAL_ROOTS, TOTAL_VOWELS, TOTAL_CONS)
+    # model = torch.load('./saved_model.pth')
 
     # train the model
-    model = train.train(model, trainloader, testloader, epochs=20, lr=0.003)
+    model = train.train(model, trainloader, testloader, epochs=35, lr=0.1)
 
     # save the model
-    torch.save(model, './saved_model2.pth')
+    torch.save(model, './saved_model.pth')
 
     return
 
