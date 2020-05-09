@@ -39,7 +39,7 @@ def dsetToPickle(root_dir, csvfile):
     del(labels) # probably not required, but clears up some memory
 
     # shuffle
-    #data = data.sample(frac=1)
+    data = data.sample(frac=1)
 
     # save to pickle file
     pkl_path = root_dir + "full_data.pkl"

@@ -43,6 +43,13 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad], lr=lr)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
 
+    ########################
+    ## FROM SUHAAS BRANCH ##
+    ########################
+    # optimizer = torch.optim.SGD(model.parameters(), lr = lr)
+    # scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 20, gamma=.1)
+    ########################
+
     # save the best model
     best_acc = 0.0
     # begin training loop
