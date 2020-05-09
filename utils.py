@@ -62,7 +62,7 @@ def getData(pickle_path, split=0.8, train_transform=None, test_transform=None):
 
 def trainModel(net, train_dataloader, test_dataloader):
 
-    train.train(net, train_dataloader, test_dataloader)
+    train.train(net, train_dataloader, test_dataloader, pretrained = False)
         #forward
 
         #backward

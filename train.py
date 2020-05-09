@@ -4,15 +4,19 @@ import torch
 import torch.nn as nn
 from models import customModel1 as custom
 
-def train(model, train_dataloader, test_dataloader):
+def train(model, train_dataloader, test_dataloader, pretrained = False):
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print('Using:', device)
     lr = .1
     model = custom.CustomNet()
+    if(pretrained):
+        model.load_state_dict(torch.load('./models/trainedModels/currBest.model'))
+        print('Pretrained custom model loaded')
     model = model.to(device)
     loss = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr = lr)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 20, gamma=.1)
     epochs = 51
     currBestAcc = 0
     bestEpoch = 0
@@ -44,6 +48,7 @@ def train(model, train_dataloader, test_dataloader):
             totalLoss += l.item()
             l.backward()
             optimizer.step()
+        scheduler.step()
         print('Loss:', totalLoss/cnt)
         print('Accuracy:', correct / total)
         if(epoch % 10 == 0):
