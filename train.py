@@ -43,10 +43,42 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad], lr=lr)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
 
+    ########################
+    ## FROM SUHAAS BRANCH ##
+    ########################
+    # optimizer = torch.optim.SGD(model.parameters(), lr = lr)
+    # scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 20, gamma=.1)
+    ########################
+
     # save the best model
     best_acc = 0.0
     # begin training loop
     for epoch in range(epochs):
+        ##############################
+        # SECTION FROM SUHAAS BRANCH #
+        ##############################
+        # totalLoss = 0
+        # cnt = 0
+        # correct = 0
+        # total = 0
+        # print('Epoch:', epoch)
+        # for i, batch in enumerate(tqdm(train_dataloader)):
+        #     cnt += 1
+        #     imgs = batch['data']
+        #     labels = batch['labels']
+        #     imgs = imgs.float()
+        #     labels = labels.squeeze(1)
+        #     imgs = imgs.to(device)
+        #     labels = labels.to(device)
+        #     outs = model(imgs)
+
+        #     #from pytorch tutorials:
+        #     _,preds = torch.max(outs,1)
+        #     correct += (preds == labels).sum().item()
+        #     total += labels.size(0)
+        ##############################
+        # END SECTION  SUHAAS BRANCH #
+        ##############################
         model.train() # set model to training mode
         running_loss = 0.0
         correct = 0
@@ -55,6 +87,25 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
             inputs = batch['data']
             inputs = makeSquareBatch(inputs, 236).to(device)
             labels = batch['labels'].to(device)
+            #########################
+            # FROM SUHAAS SECTION ###
+            #########################
+            # cnt += 1
+            # imgs = batch['data']
+            # labels = batch['labels']
+            # imgs = imgs.float()
+            # labels = labels.squeeze(1)
+            # imgs = imgs.to(device)
+            # labels = labels.to(device)
+            # outs = model(imgs)
+
+            # #from pytorch tutorials:
+            # _,preds = torch.max(outs,1)
+            # correct += (preds == labels).all(1).sum().item()
+            # total += labels.size(0)
+            ##########################
+            ##### END SECTION ########
+            ##########################
 
             # zero the parameter gradients
             optimizer.zero_grad()
