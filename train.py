@@ -3,16 +3,17 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 from models import customModel1 as custom
+from models import customModel2 as custom2
 
 def train(model, train_dataloader, test_dataloader, pretrained = False):
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print('Using:', device)
-    lr = .1
-    model = custom.CustomNet()
-    if(pretrained):
-        model.load_state_dict(torch.load('./models/trainedModels/currBest.model'))
-        print('Pretrained custom model loaded')
+    lr = .01
+    model = custom2.CustomNet()
+    #if(pretrained):
+    #    model.load_state_dict(torch.load('./models/trainedModels/currBest.model'))
+    #    print('Pretrained custom model loaded')
     model = model.to(device)
     loss = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr = lr)
@@ -36,10 +37,15 @@ def train(model, train_dataloader, test_dataloader, pretrained = False):
             labels = labels.squeeze(1)
             imgs = imgs.to(device)
             labels = labels.to(device)
-            outs = model(imgs)
-
+            outs1 = model(imgs, 1)
+            outs2 = nn.functional.pad(model(imgs,2), 157)
+            outs3 = nn.functional.pad(model(imgs,3), 161)
+            outs = torch.cat((outs1,outs2,outs3),1)
+            _,preds1 = torch.max(outs1,1)
+            _,preds2 = torch.max(outs2,1)
+            _,preds3 = torch.max(outs3,1)
+            preds = torch.cat((preds1, preds2, preds3),1)
             #from pytorch tutorials:
-            _,preds = torch.max(outs,1)
             correct += (preds == labels).all(1).sum().item()
             total += labels.size(0)
 
@@ -70,7 +76,7 @@ def train(model, train_dataloader, test_dataloader, pretrained = False):
             print('Testing accuracy:', correct/total)
             if(correct/total > currBestAcc):
                 currBestAcc = correct/total
-                torch.save(model.state_dict(), './models/trainedModels/currBest.model')
+                torch.save(model.state_dict(), './models/trainedModels/multiNet.model')
                 bestEpoch = epoch
 
 
