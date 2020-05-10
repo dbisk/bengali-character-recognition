@@ -6,7 +6,7 @@ import torch.optim as optim
 
 def makeSquareBatch(img_batch, size):
     batch_size, channels, height, width = img_batch.shape
-    squared_images = torch.ones((batch_size, channels, size, size), dtype=img_batch.dtype) * 255
+    squared_images = torch.ones((batch_size, channels, size, size), dtype=img_batch.dtype) * torch.max(img_batch)
 
     squared_images[:, :, (size-height)//2:(size-height)//2 + height, (size-width)//2:(size-width)//2 + width] = img_batch
     return squared_images
@@ -17,17 +17,17 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
 
     # send model to device
     model = model.to(device)
+
+    # optimizer and loss function
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad], lr=lr)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
 
     # save the best model
     best_acc = 0.0
     # begin training loop
     for epoch in range(epochs):
         model.train() # set model to training mode
-        # decrease lr after a while
-        if (epoch > 1 and epoch % 15 == 0 and epoch < 31):
-            lr = lr / 10
         running_loss = 0.0
         correct = 0
         total = 0
@@ -88,6 +88,9 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
                     # correct += (preds_cons == labels[:,2]).sum().item()
                     total += labels.size(0)
             print("[%d] VAL acc %.3f" % (epoch + 1, 100 * correct / total))
+
+        # step the lr scheduler
+        scheduler.step()
     
     # complete, return the model
     return model
