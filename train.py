@@ -106,7 +106,7 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
                     total += labels.size(0)
             acc = 100 * correct / total
             if (acc > best_acc):
-                torch.save(model, './best_model.pth')
+                torch.save(model.state_dict(), './best_model.model')
                 best_acc = acc
             print("[%d] VAL acc %.3f" % (epoch + 1, acc))
 

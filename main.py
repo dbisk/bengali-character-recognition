@@ -39,13 +39,13 @@ def main():
     
     # create the model
     model = prnet.PretrainedResnet(TOTAL_ROOTS, TOTAL_VOWELS, TOTAL_CONS)
-    # model = torch.load('./saved_model_best.pth')
+    # model.load_state_dict(torch.load('./best_model.model'))
 
     # train the model
     model = train.train(model, trainloader, testloader, epochs=35, lr=0.01)
 
     # save the model
-    torch.save(model, './saved_model.pth')
+    torch.save(model.state_dict(), './saved_model.model')
 
     # validate the model
     # acc = train.validate(model, testloader)
