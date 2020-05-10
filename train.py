@@ -47,6 +47,31 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
     best_acc = 0.0
     # begin training loop
     for epoch in range(epochs):
+        ##############################
+        # SECTION FROM SUHAAS BRANCH #
+        ##############################
+        # totalLoss = 0
+        # cnt = 0
+        # correct = 0
+        # total = 0
+        # print('Epoch:', epoch)
+        # for i, batch in enumerate(tqdm(train_dataloader)):
+        #     cnt += 1
+        #     imgs = batch['data']
+        #     labels = batch['labels']
+        #     imgs = imgs.float()
+        #     labels = labels.squeeze(1)
+        #     imgs = imgs.to(device)
+        #     labels = labels.to(device)
+        #     outs = model(imgs)
+
+        #     #from pytorch tutorials:
+        #     _,preds = torch.max(outs,1)
+        #     correct += (preds == labels).sum().item()
+        #     total += labels.size(0)
+        ##############################
+        # END SECTION  SUHAAS BRANCH #
+        ##############################
         model.train() # set model to training mode
         running_loss = 0.0
         correct = 0
