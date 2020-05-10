@@ -9,7 +9,7 @@ def train(model, train_dataloader, test_dataloader, pretrained = False):
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print('Using:', device)
-    lr = .01
+    lr = .1
     model = custom2.CustomNet()
     #if(pretrained):
     #    model.load_state_dict(torch.load('./models/trainedModels/currBest.model'))
@@ -38,12 +38,12 @@ def train(model, train_dataloader, test_dataloader, pretrained = False):
             imgs = imgs.to(device)
             labels = labels.to(device)
             outs1 = model(imgs, 1)
-            outs2 = nn.functional.pad(model(imgs,2), 157)
-            outs3 = nn.functional.pad(model(imgs,3), 161)
-            outs = torch.cat((outs1,outs2,outs3),1)
-            _,preds1 = torch.max(outs1,1)
-            _,preds2 = torch.max(outs2,1)
-            _,preds3 = torch.max(outs3,1)
+            outs2 = nn.functional.pad(model(imgs,2), (0,157))
+            outs3 = nn.functional.pad(model(imgs,3), (0,161))
+            outs = torch.stack((outs1,outs2,outs3), 2)
+            preds1 = torch.max(outs1,1)[1].view(-1,1)
+            preds2 = torch.max(outs2,1)[1].view(-1,1)
+            preds3 = torch.max(outs3,1)[1].view(-1,1)
             preds = torch.cat((preds1, preds2, preds3),1)
             #from pytorch tutorials:
             correct += (preds == labels).all(1).sum().item()
@@ -63,16 +63,34 @@ def train(model, train_dataloader, test_dataloader, pretrained = False):
             correct = 0
             total = 0
             for i, batch in enumerate(tqdm(test_dataloader)):
+
                 imgs = batch['data']
                 labels = batch['labels']
                 imgs = imgs.float()
                 labels = labels.squeeze(1)
                 imgs = imgs.to(device)
                 labels = labels.to(device)
-                outs = model(imgs)
-                _,preds = torch.max(outs,1)
+                outs1 = model(imgs, 1)
+                outs2 = nn.functional.pad(model(imgs,2), (0,157))
+                outs3 = nn.functional.pad(model(imgs,3), (0,161))
+                outs = torch.stack((outs1,outs2,outs3), 2)
+                preds1 = torch.max(outs1,1)[1].view(-1,1)
+                preds2 = torch.max(outs2,1)[1].view(-1,1)
+                preds3 = torch.max(outs3,1)[1].view(-1,1)
+                preds = torch.cat((preds1, preds2, preds3),1)
+                #from pytorch tutorials:
                 correct += (preds == labels).all(1).sum().item()
                 total += labels.size(0)
+                #imgs = batch['data']
+                #labels = batch['labels']
+                #imgs = imgs.float()
+                #labels = labels.squeeze(1)
+                #imgs = imgs.to(device)
+                #labels = labels.to(device)
+                #outs = model(imgs)
+                #_,preds = torch.max(outs,1)
+                #correct += (preds == labels).all(1).sum().item()
+                #total += labels.size(0)
             print('Testing accuracy:', correct/total)
             if(correct/total > currBestAcc):
                 currBestAcc = correct/total

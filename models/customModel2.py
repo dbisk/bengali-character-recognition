@@ -123,15 +123,15 @@ class CustomNet(nn.Module):
         if(part == 1):
             out = self.part1(x)
             out = out.view(-1,4*10*16)
-            out = out.fc1(out)
+            out = self.fc1(out)
             return out
         elif(part == 2):
             out = self.part2(x)
             out = out.view(-1,4*10*16)
-            out = out.fc2(out)
+            out = self.fc2(out)
             return out
         elif(part == 3):
             out = self.part3(x)
             out = out.view(-1,4*10*16)
-            out = out.fc3(out)
+            out = self.fc3(out)
             return out

@@ -27,9 +27,9 @@ def testTrainingLoop(need_pickle=False):
         pkl_path = './dataset/full_data.pkl'
 
     main_transform = transforms.Compose([transforms.ToTensor()])
-    trainset, testset = getData(pkl_path, train_transform = main_transform, test_transform = main_transform, split=.5)
-    train_dataloader = DataLoader(trainset, batch_size = 64, shuffle = True, num_workers = 8)
-    test_dataloader = DataLoader(testset, batch_size = 64, shuffle = True, num_workers = 8)
+    trainset, testset = getData(pkl_path, train_transform = main_transform, test_transform = main_transform, split=.375)
+    train_dataloader = DataLoader(trainset, batch_size = 32, shuffle = True, num_workers = 8)
+    test_dataloader = DataLoader(testset, batch_size = 16, shuffle = True, num_workers = 0)
     trainModel(None, train_dataloader, test_dataloader)
 
 
