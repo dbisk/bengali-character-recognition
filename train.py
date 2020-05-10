@@ -11,6 +11,26 @@ def makeSquareBatch(img_batch, size):
     squared_images[:, :, (size-height)//2:(size-height)//2 + height, (size-width)//2:(size-width)//2 + width] = img_batch
     return squared_images
 
+def validate(model, test_dataloader):
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    model.to(device)
+    model.eval() # set model to eval mode
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        for batch in tqdm(test_dataloader):
+            inputs = batch['data']
+            inputs = makeSquareBatch(inputs, 236).to(device)
+            labels = batch['labels'].to(device)
+            out_root, out_vowe, out_cons = model(inputs)
+            preds_root = torch.max(out_root, 1)[1]
+            preds_vowe = torch.max(out_vowe, 1)[1]
+            preds_cons = torch.max(out_cons, 1)[1]
+            correct += torch.stack(((preds_root == labels[:,0]), (preds_vowe == labels[:,1]), (preds_cons == labels[:,2])), dim=1).all(1).sum().item()
+            total += labels.size(0)
+    acc = 100 * correct / total
+    return acc
+
 def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     print("Using:", device)
@@ -64,9 +84,6 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
         running_loss /= len(train_dataloader)
         acc = 100 * correct / total
         print("[%d] loss %.3f, acc %.3f" % (epoch + 1, running_loss, acc))
-        if (acc > best_acc):
-            torch.save(model, './best_model.pth')
-            best_acc = acc
 
         # every few epochs, check validation set
         if (epoch % 5 == 0 or epoch + 1 == epochs ):
@@ -87,7 +104,11 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
                     # correct += (preds_vowe == labels[:,1]).sum().item()
                     # correct += (preds_cons == labels[:,2]).sum().item()
                     total += labels.size(0)
-            print("[%d] VAL acc %.3f" % (epoch + 1, 100 * correct / total))
+            acc = 100 * correct / total
+            if (acc > best_acc):
+                torch.save(model, './best_model.pth')
+                best_acc = acc
+            print("[%d] VAL acc %.3f" % (epoch + 1, acc))
 
         # step the lr scheduler
         scheduler.step()
