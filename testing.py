@@ -41,19 +41,28 @@ def visualize():
     trainset, testset = getData(pkl_path, train_transform = main_transform, test_transform = main_transform)
     test_dataloader = DataLoader(testset, batch_size = 1, shuffle = True)
     model = custom.CustomNet()
+    model.load_state_dict(torch.load('./models/trainedModels/currBest.model'))
     plt.figure(dpi=300)
+    curr = 150
     for i,batch in enumerate(test_dataloader):
-        if(i <5):
-            plt.subplot(150 + i + 1)
-            data = test_dataloader[i]
+        if(i >= 10 and i < 15):
+            plt.subplot(curr + i + 1)
+            data = batch
             img = data['data']
-            labels = data['labels']
+            labels = data['labels'][0].numpy()
             outs = model(img)
             _,preds = torch.max(outs,1)
-            print(labels, preds)
-        else:
-            break
+            outs = outs[0].detach().numpy()
+            preds = preds[0].detach().numpy()
+            plt.imshow(img.numpy()[0][0], cmap='gray')
+            plt.xlabel('Predictions: '+ str(preds[0]) +' '+ str(preds[1])+' ' +str(preds[2]) + '\n Ground Truth:'+ str(labels[0])+' ' +str(labels[1])+' ' +str(labels[2]))
 
+        else:
+            if(i > 15):
+                break
+            else:
+                continue
+    plt.show()
 if __name__ == '__main__':
     # set this to true if you don't already have a pickle file
     #testDataset(need_pickle=False)
