@@ -32,8 +32,19 @@ def testTrainingLoop(need_pickle=False):
     test_dataloader = DataLoader(testset, batch_size = 64, shuffle = True)
     trainModel(None, train_dataloader, test_dataloader)
 
+def testImages():
+    pkl_path = './dataset/full_data.pkl'
+    main_transform = transforms.Compose([transforms.ToTensor()])
+    trainset, testset = getData(pkl_path, train_transform = main_transform, test_transform = main_transform)
+    img = trainset[0]['data'][0]
+    labels = str(trainset[0]['labels'])
+    plt.figure()
+    plt.imshow(img, cmap='gray')
+    plt.xlabel(labels)
+    plt.show()
 
 if __name__ == '__main__':
     # set this to true if you don't already have a pickle file
     #testDataset(need_pickle=False)
-     testTrainingLoop(need_pickle=False)
+    #testTrainingLoop(need_pickle=False)
+    testImages()
