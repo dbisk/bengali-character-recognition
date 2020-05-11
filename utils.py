@@ -47,11 +47,13 @@ def dsetToPickle(root_dir, csvfile):
     del(data)
     return pkl_path
 
-def getData(pickle_path, split=0.8, train_transform=None, test_transform=None):
+def getData(pickle_path, split=0.8, drop=0, train_transform=None, test_transform=None):
     start_time = time.time()
     print("Reading pickle from " + pickle_path + "...")
     data = pd.read_pickle(pickle_path)
     print("Pickle loading completed. Elapsed: %d seconds" % (time.time() - start_time))
+    if (drop > 0 and drop < 1):
+        data.drop(data.tail(int(len(data) * drop)).index, inplace=True)
     split_index = int(split * len(data))
 
     # create the BengaliDataset objects
