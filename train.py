@@ -127,6 +127,7 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
         ##############################
         # END SECTION  SUHAAS BRANCH #
         ##############################
+
         model.train() # set model to training mode
         running_loss = 0.0
         correct = 0
@@ -148,9 +149,27 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
             loss = loss_root + loss_vowe + loss_cons
             loss.backward()
             optimizer.step()
-            
+
+
+            # check whether our prediction was correct
+            preds_root = torch.max(out_root, 1)[1]
+            preds_vowe = torch.max(out_vowe, 1)[1]
+            preds_cons = torch.max(out_cons, 1)[1]
+            correct += torch.stack(((preds_root == labels[:,0]), (preds_vowe == labels[:,1]), (preds_cons == labels[:,2])), dim=1).all(1).sum().item()
+            # correct += (preds_vowe == labels[:,1]).sum().item()
+            # correct += (preds_cons == labels[:,2]).sum().item()
+            total += labels.size(0)
+
+            # statistics
+            running_loss += loss.item()
+
+        # normalize by number of batches
+        running_loss /= len(train_dataloader)
+        acc = 100 * correct / total
+        print("[%d] loss %.3f, acc %.3f" % (epoch + 1, running_loss, acc))
+
 # FROM SUHAAS MULTINET SECTION
-#scheduler.step()
+#        scheduler.step()
 #        print('Loss:', totalLoss/cnt)
 #        print('Accuracy:', correct / total)
 #        if(epoch % 10 == 0):
@@ -196,23 +215,6 @@ def train(model, train_dataloader, test_dataloader, epochs=10, lr=0.001):
 #
 #
 #    print('Epoch', bestEpoch, 'gave the best validation accuracy of', currBestAcc)
-            # check whether our prediction was correct
-            preds_root = torch.max(out_root, 1)[1]
-            preds_vowe = torch.max(out_vowe, 1)[1]
-            preds_cons = torch.max(out_cons, 1)[1]
-            correct += torch.stack(((preds_root == labels[:,0]), (preds_vowe == labels[:,1]), (preds_cons == labels[:,2])), dim=1).all(1).sum().item()
-            # correct += (preds_vowe == labels[:,1]).sum().item()
-            # correct += (preds_cons == labels[:,2]).sum().item()
-            total += labels.size(0)
-
-            # statistics
-            running_loss += loss.item()
-
-        # normalize by number of batches
-        running_loss /= len(train_dataloader)
-        acc = 100 * correct / total
-        print("[%d] loss %.3f, acc %.3f" % (epoch + 1, running_loss, acc))
-
         # every few epochs, check validation set
         if (epoch % 5 == 0 or epoch + 1 == epochs ):
 
