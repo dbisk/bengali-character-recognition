@@ -39,7 +39,7 @@ def dsetToPickle(root_dir, csvfile):
     del(labels) # probably not required, but clears up some memory
 
     # shuffle
-    data = data.sample(frac=1)
+    #data = data.sample(frac=1)
 
     # save to pickle file
     pkl_path = root_dir + "full_data.pkl"
@@ -64,7 +64,7 @@ def getData(pickle_path, split=0.8, drop=0, train_transform=None, test_transform
 
 def trainModel(net, train_dataloader, test_dataloader):
 
-    train.train(net, train_dataloader, test_dataloader)
+    train.train(net, train_dataloader, test_dataloader, pretrained = False)
         #forward
 
         #backward
