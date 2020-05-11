@@ -38,7 +38,7 @@ def testImages():
     trainset, testset = getData(pkl_path, train_transform = main_transform, test_transform = main_transform)
     img = trainset[0]['data'][0]
     labels = str(trainset[0]['labels'])
-    plt.figure()
+    plt.figure(dpi=300)
     plt.imshow(img, cmap='gray')
     plt.xlabel(labels)
     plt.show()
